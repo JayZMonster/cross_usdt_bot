@@ -1,5 +1,6 @@
 import requests as r
-from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.edge.options import Options as E_opt
 from selenium import webdriver
 from bs4 import BeautifulSoup
 from random import randint
@@ -12,18 +13,25 @@ class Parser:
         self.url = url
         self.asset = asset
         self.tickers: list = []
+        self.driver = None
+        self.init_driver()
+
+    def init_driver(self, wind=False):
+        if wind:
+            self.driver = webdriver.Edge()
+        else:
+            chrome_options = Options()
+            chrome_options.add_argument('--no-sandbox')
+            chrome_options.add_argument('--headless')
+            self.driver = webdriver.Chrome(chrome_options=chrome_options)
 
     def parse_page(self, sub=''):
         headers = {
             'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.9; rv:45.0) Gecko/20100101 Firefox/45.0'
         }
-        print('This')
-        driver = webdriver.Chrome(executable_path='chromedriver')
-        print(driver.name)
-        driver.get(self.url+sub)
-        content = driver.find_element(by='tag', value='html')
-        soup = BeautifulSoup(content.text, 'lxml')
-        return driver
+        self.driver.get(self.url+sub)
+        soup = BeautifulSoup(self.driver.page_source, 'lxml')
+        return soup
 
     def _add_ticker(self, tr):
         try:
@@ -78,11 +86,11 @@ class Parser:
 
     def parse(self):
         # Parsing tickers first of all
-        # try:
-        self._parse_tickers()
-        print('Tickers parsed')
-        # except AttributeError:
-        #     return 'chill'
+        try:
+            self._parse_tickers()
+            print('Tickers parsed')
+        except AttributeError:
+            return 'chill'
         summaries = []
         for ticker in self.tickers:
             print(f'Parsing {ticker["name"]}...')

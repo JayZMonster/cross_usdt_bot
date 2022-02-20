@@ -29,6 +29,17 @@ def mutate(summaries, bin_prices, straight_cost):
     return final
 
 
+def get_straight_cost(driver):
+    driver.get('https://p2p.binance.com/en?fiat=RUB&payment=TINKOFF')
+    sleep(10)
+    from bs4 import BeautifulSoup
+    soup = BeautifulSoup(driver.page_source, 'lxml')
+    vurnku = soup.find('body').find('main', {'class': 'main-content'}).find('div', {'class': 'css-16g55fu'}).find('div',
+                                                                                                                  {
+                                                                                                                      'class': 'css-1m1f8hn'})
+    return vurnku.text
+
+
 def main(*args):
     notifier = Notifier(token=TG_TOKEN,
                         chat_id=CHAT_ID,
@@ -36,6 +47,7 @@ def main(*args):
     parser = Parser(url=URL,
                     asset=ASSET,
                     )
+
     binance_parser = BinanceParser('', '')
     while True:
         summaries = parser.parse()
@@ -43,11 +55,11 @@ def main(*args):
             print('Chilling 60 secs')
             sleep(60)
             continue
-        straight_cost = binance_parser.get_cost()
+        straight_cost = get_straight_cost(parser.driver)
         bin_prices = binance_parser.get_all_tickers(summaries)
         final = mutate(summaries, bin_prices, straight_cost)
         notifier.work(final)
-        sleep(300)
+        sleep(200)
 
 
 if __name__ == '__main__':

@@ -23,9 +23,9 @@ class Notifier:
                   f'[Bestchange]({i["link"]}): Отдаем {i["asset_price"]} RUB QIWI -> Получаем' \
                   f' 1 {i["ticker"]["ticker"]}\n' \
                   f'Binance: Отдаем 1 {i["ticker"]["ticker"]} -> Получаем {i["binance_price"]} USDT\n' \
-                  f'Прямой курс Binance: {i["straight_price"]}\n' \
+                  f'Binance P2P: {i["straight_price"]}\n' \
                   f'Кросс-курс: {i["cross_price"]}\n' \
                   f'Выгода: {round(i["profit"], 2)}%\n'
             print(msg)
-            if i['profit'] > 1.5 or i["ticker"]["ticker"] == 'BTC':
+            if i['profit'] > 1:
                 self.notify(msg)
