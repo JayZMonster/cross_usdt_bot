@@ -26,12 +26,8 @@ class Notifier:
             msg = f'Коридор (БЧ+Бинанс): RUB QIWI->{i["ticker"]["ticker"]}->USDT\n' \
                   f'[Bestchange]({i["link"]}): Отдаем {i["asset_price"]} RUB QIWI -> Получаем' \
                   f' 1 {i["ticker"]["ticker"]}\n' \
-                  f'Binance: Отдаем 1 {i["ticker"]["ticker"]} -> Получаем {i["binance_price"]} USDT\n' \
-                  f'Binance P2P: {i["straight_price"]}\n' \
-                  f'Кросс-курс: {i["cross_price"]}\n' \
+                  f'Binance P2P: Отдаем {i["straight_price"]} RUB -> Получаем 1 {i["ticker"]["ticker"]}\n' \
                   f'Выгода: {round(i["profit"], 2)}%\n'
             print(msg)
-            if take_profit[0] < i['profit'] < take_profit[1] :
+            if i['profit'] > take_profit[0]:
                 self.notify(msg, 0)
-            if i['profit'] > take_profit[1]:
-                self.notify(msg, 1)
