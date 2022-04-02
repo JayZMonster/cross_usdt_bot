@@ -1,8 +1,4 @@
-import pprint
-
 from binance import Client
-import requests as r
-from bs4 import BeautifulSoup
 from binance.exceptions import *
 from typing import List
 
@@ -17,18 +13,6 @@ class BinanceParser:
 
     def _init_client(self):
         self.client = Client(self.api_key, self.api_secret)
-
-    @staticmethod
-    def get_usd_p2p():
-        content = r.get('https://p2p.binance.com/en?fiat=RUB&payment=TINKOFF')
-        soup = BeautifulSoup(content.text, 'lxml')
-        # find('div').find_all('div')[1].find('main').find('div', {'class': 'css-16g55fu'}).find('div').find_all('div')
-        vurnku = soup.find('body').find('main', {'class': 'main-content'}).find('div', {'class': 'css-16g55fu'}).find('div', {'class': 'css-1m1f8hn'})
-
-        pprint.pprint(soup)
-        price = vurnku.find('div').find('div').find_all('div')[1].text
-        print(price)
-        return price
 
     def get_cost(self, ticker='USDTRUB'):
         try:

@@ -1,4 +1,3 @@
-
 from notifier import Notifier
 from parser import Parser, webdriver
 from binance_parser import BinanceParser
@@ -29,34 +28,38 @@ def mutate(summaries, bin_prices, straight_cost):
         final.append(info)
     return final
 
-# selenium.webdriver.common.by.By.XPATH
+
 def get_straight_cost(driver: webdriver.Chrome):
     found = False
     while not found:
         try:
             print('getting p2p price\n')
-            driver.get('https://p2p.binance.com/ru/trade/buy/USDT?fiat=RUB&payment=ALL')
+            driver.get('https://p2p.binance.com/ru/trade/buy/USDT?fiat=RUB&payment=TINKOFF')
             sleep(10)
-            selects = driver.find_elements_by_xpath('//*[@id="onetrust-consent-sdk"]/div[1]')
-            for select in selects:
-                driver.execute_script("arguments[0].setAttribute('class', 'onetrust-pc-dark-filter ot-hide ot-f>
+            try:
+                driver.find_element_by_xpath("/html/body/div[8]/div/div[2]/button[1]").click()
+            except:
+                pass
+            try:
+                selects = driver.find_elements_by_xpath('//*[@id="onetrust-consent-sdk"]/div[1]')
+                for select in selects:
+                    driver.execute_script("arguments[0].setAttribute('class', 'onetrust-pc-dark-filter ot-hide ot-fade-in')", select)
+            except:
+                pass
             try:
                 driver.find_element_by_css_selector('body > div.css-vp41bv > div > svg').click()
             except:
                 pass
-            driver.find_element_by_xpath("/html/body/div[1]/div[2]/main/div[4]/div/div[1]/div[3]/div[2]/div[1]">
             element = driver.find_element_by_id('onetrust-style')
             driver.execute_script("""
                 var element = arguments[0];
                 element.parentNode.removeChild(element);
                 """, element)
-            driver.find_element_by_xpath('/html/body/div[1]/div[2]/main/div[4]/div/div[1]/div[3]/div[2]/div[3]/>
+            driver.find_element_by_xpath("/html/body/div[1]/div[2]/main/div[4]/div/div[1]/div[3]/div[2]/div[1]").click()
+            driver.find_element_by_xpath('//*[@id="Тинькофф"]/div/div[2]').click()
             sleep(5)
-            from bs4 import BeautifulSoup
-            soup = BeautifulSoup(driver.page_source, 'lxml')
-            vurnku = soup.find('body').find('main', {'class': 'main-content'}).find('div', {'class': 'css-16g55>
-                                                                                                               >
-                                                                                                               >
+            vurnku = driver.find_element_by_xpath("/html/body/div[1]/div[2]/main/div[5]/div/div[2]/div[1]/div[1]/div[2]/div/div/div[1]").text
+
             if vurnku is not None:
                 found = True
             else:
@@ -64,7 +67,7 @@ def get_straight_cost(driver: webdriver.Chrome):
         except:
             sleep(5)
             continue
-    return vurnku.text
+    return vurnku
 
 
 def main(num):
